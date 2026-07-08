@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Javier de la Torre · Científico de Datos</title>
+<meta name="description" content="Portafolio de Javier de la Torre — Científico de Datos e Inteligencia Artificial. Machine Learning, RAG, Computer Vision, automatización y BI.">
+<style>
+  :root{
+    --bg:#0b0f19; --bg2:#111827; --card:#151d2e; --border:#243049;
+    --text:#e5e9f2; --muted:#93a0b8;
+    --accent:#38bdf8; --accent2:#a78bfa; --accent3:#34d399;
+    --grad:linear-gradient(100deg,#38bdf8,#a78bfa 55%,#34d399);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;overflow-x:hidden}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,15,25,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .logo{font-weight:800;font-size:1.15rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-links{display:flex;gap:26px}
+  .nav-links a{color:var(--muted);font-size:.92rem;transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+  @media(max-width:640px){.nav-links{display:none}}
+
+  /* HERO */
+  header{position:relative;padding:150px 0 90px;text-align:left}
+  header::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(600px 300px at 80% 10%,rgba(56,189,248,.14),transparent),
+    radial-gradient(500px 300px at 15% 80%,rgba(167,139,250,.12),transparent)}
+  .hero{position:relative}
+  .kicker{display:inline-block;border:1px solid var(--border);background:var(--card);color:var(--accent3);font-size:.8rem;padding:6px 14px;border-radius:999px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px}
+  h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;line-height:1.12;margin-bottom:16px}
+  h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tagline{font-size:1.15rem;color:var(--muted);max-width:640px;margin-bottom:34px}
+  .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:12px 26px;border-radius:10px;font-weight:600;font-size:.95rem;transition:transform .15s,box-shadow .15s}
+  .btn-primary{background:var(--grad);color:#0b0f19}
+  .btn-ghost{border:1px solid var(--border);color:var(--text)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.18)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:58px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
+  .stat b{display:block;font-size:1.7rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat small{color:var(--muted)}
+
+  /* SECTIONS */
+  section{padding:80px 0}
+  .sec-title{font-size:1.9rem;font-weight:800;margin-bottom:8px}
+  .sec-title::after{content:"";display:block;width:56px;height:4px;border-radius:4px;background:var(--grad);margin-top:10px}
+  .sec-sub{color:var(--muted);margin:16px 0 40px;max-width:640px}
+
+  /* ABOUT */
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:36px;align-items:start}
+  @media(max-width:760px){.about-grid{grid-template-columns:1fr}}
+  .about-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px}
+  .about-card h3{margin-bottom:12px;color:var(--accent)}
+  .about-card ul{list-style:none}
+  .about-card li{padding:7px 0;color:var(--muted);border-bottom:1px dashed var(--border)}
+  .about-card li:last-child{border-bottom:none}
+  .about-card li::before{content:"▸ ";color:var(--accent3)}
+
+  /* PROJECTS */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px;display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-5px);border-color:var(--accent)}
+  .card .icon{font-size:1.9rem;margin-bottom:14px}
+  .card h3{font-size:1.15rem;margin-bottom:10px}
+  .card p{color:var(--muted);font-size:.94rem;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .tag{font-size:.74rem;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--bg2);color:var(--accent)}
+  .badge{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent3);margin-bottom:10px}
+
+  /* SKILLS */
+  .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px}
+  .skill-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px}
+  .skill-box h3{font-size:1rem;margin-bottom:14px;color:var(--accent2)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-size:.8rem;padding:5px 12px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text)}
+
+  /* CONTACT */
+  .contact-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 32px;text-align:center;position:relative;overflow:hidden}
+  .contact-box::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at 50% 0%,rgba(167,139,250,.12),transparent)}
+  .contact-box h2{font-size:1.8rem;margin-bottom:12px;position:relative}
+  .contact-box p{color:var(--muted);max-width:520px;margin:0 auto 30px;position:relative}
+  .contact-links{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative}
+
+  footer{border-top:1px solid var(--border);padding:26px 0;text-align:center;color:var(--muted);font-size:.85rem}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="logo">JT&lt;/&gt;</div>
+    <div class="nav-links">
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#habilidades">Habilidades</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap hero">
+    <span class="kicker">Datos · Inteligencia Artificial · Automatización</span>
+    <h1>Hola, soy <span>Javier de la Torre</span><br>Científico de Datos</h1>
+    <p class="tagline">Construyo soluciones end-to-end que convierten datos en decisiones: modelos de machine learning, asistentes con IA generativa (RAG), visión computacional y automatización de procesos que ahorran cientos de horas de trabajo manual.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="#proyectos">Ver proyectos</a>
+      <a class="btn btn-ghost" href="#contacto">Contáctame</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>13+</b><small>Proyectos desarrollados</small></div>
+      <div class="stat"><b>15K+</b><small>Líneas de código propias</small></div>
+      <div class="stat"><b>6</b><small>Sistemas en producción</small></div>
+      <div class="stat"><b>100%</b><small>Soluciones end-to-end</small></div>
+    </div>
+  </div>
+</header>
+
+<section id="sobre-mi">
+  <div class="wrap">
+    <h2 class="sec-title reveal">Sobre mí</h2>
+    <p class="sec-sub reveal">Especialista en llevar la IA del laboratorio a la operación real.</p>
+    <div class="about-grid">
+      <div class="about-card reveal">
+        <h3>Mi enfoque</h3>
+        <p style="color:var(--muted)">No me limito a entrenar modelos: diseño la solución completa — desde la ingesta y limpieza de datos, pasando por el modelo o motor de IA, hasta la API, la interfaz y el despliegue como aplicación lista para el usuario final.</p>
+        <p style="color:var(--muted);margin-top:12px">He desarrollado sistemas que hoy operan en el sector eléctrico, procesos electorales y análisis deportivo: chatbots RAG 100% locales (privacidad primero), detección de objetos con deep learning, pronóstico de demanda con series temporales y automatización documental a escala.</p>
+      </div>
+      <div class="about-card reveal">
+        <h3>Lo que me diferencia</h3>
+        <ul>
+          <li>Soluciones completas: datos → modelo → API → interfaz</li>
+          <li>IA privada y local cuando los datos son sensibles</li>
+          <li>Automatización que elimina trabajo manual repetitivo</li>
+          <li>Entregables reales: ejecutables, APIs y dashboards</li>
+          <li>Dominio de Python, TypeScript y Power BI</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proyectos" style="background:var(--bg2)">
+  <div class="wrap">
+    <h2 class="sec-title reveal">Proyectos destacados</h2>
+    <p class="sec-sub reveal">Una selección de sistemas que he diseñado y construido de principio a fin.</p>
+    <div class="grid">
+
+      <div class="card reveal">
+        <div class="icon">🤖</div>
+        <span class="badge">IA Generativa · RAG</span>
+        <h3>Asistente técnico RAG multimodal</h3>
+        <p>Chatbot que responde consultas técnicas sobre documentación oficial del sector eléctrico usando RAG con búsqueda vectorial. Procesa presentaciones con OCR y visión, corre 100% en local (sin enviar datos a la nube) e incluye dashboard de monitoreo e integración lista para WhatsApp.</p>
+        <div class="tags"><span class="tag">FastAPI</span><span class="tag">ChromaDB</span><span class="tag">Ollama</span><span class="tag">Embeddings</span><span class="tag">Streamlit</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">👁️</div>
+        <span class="badge">Computer Vision</span>
+        <h3>Detección de elementos arquitectónicos</h3>
+        <p>Modelo YOLOv8 entrenado desde cero para detectar aleros, toldos y balcones en fotografías de campo. Pipeline completo: etiquetado del dataset, augmentación, entrenamiento y servicio de inferencia local vía API REST con interfaz web.</p>
+        <div class="tags"><span class="tag">YOLOv8</span><span class="tag">Deep Learning</span><span class="tag">FastAPI</span><span class="tag">CVAT</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">⚽</div>
+        <span class="badge">Machine Learning</span>
+        <h3>Predictor Mundial 2026</h3>
+        <p>Sistema de pronóstico de resultados de fútbol con ensemble de modelos (Poisson + XGBoost + regresión logística). Predice marcadores, over/under y goleadores con índice de confianza, servido en una SPA con visualizaciones interactivas.</p>
+        <div class="tags"><span class="tag">XGBoost</span><span class="tag">scikit-learn</span><span class="tag">React</span><span class="tag">Recharts</span><span class="tag">FastAPI</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">📄</div>
+        <span class="badge">Automatización + IA</span>
+        <h3>Generador inteligente de documentos</h3>
+        <p>Sistema empresarial que genera cartas y documentos normalizados de forma automática: consulta bases de datos, aplica un motor de reglas con apoyo de IA y produce documentos Word listos para firma. Distribuido como ejecutable de escritorio; procesa en minutos lo que tomaba días.</p>
+        <div class="tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">python-docx</span><span class="tag">pandas</span><span class="tag">PyInstaller</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">📈</div>
+        <span class="badge">Series temporales · Forecasting</span>
+        <h3>Pronóstico de demanda eléctrica</h3>
+        <p>Sistema de forecasting de demanda por zona geográfica que compara con backtesting múltiples enfoques: Chronos-Bolt (modelo fundacional transformer de Amazon), CatBoost, LSTM, SARIMA/ARIMA y Prophet. Incluye imputación de datos, estacionalidad múltiple, intervalos P10/P50/P90 y procesamiento paralelizado sobre millones de registros (Spark/Parquet).</p>
+        <div class="tags"><span class="tag">Chronos-Bolt</span><span class="tag">CatBoost</span><span class="tag">LSTM</span><span class="tag">SARIMA</span><span class="tag">Prophet</span><span class="tag">Spark</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">🗳️</div>
+        <span class="badge">Web Scraping · Datos</span>
+        <h3>Monitor de actas electorales</h3>
+        <p>Monitor automatizado de resultados electorales oficiales: scraping con Playwright, almacenamiento en SQLite, detección de actas observadas y exportación a Excel/CSV, con arquitectura modular de más de 90 módulos.</p>
+        <div class="tags"><span class="tag">Node.js</span><span class="tag">Playwright</span><span class="tag">SQLite</span><span class="tag">ExcelJS</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">💬</div>
+        <span class="badge">IA Conversacional</span>
+        <h3>Bot de apoyo emocional</h3>
+        <p>Bot de Telegram con técnicas de acompañamiento estructurado (TCC, entrevista motivacional), detección automática de severidad y temas, y capa de seguridad completa: anti-inyección, rate limiting y fallback local si la API falla.</p>
+        <div class="tags"><span class="tag">Python</span><span class="tag">Telegram API</span><span class="tag">Gemini</span><span class="tag">Seguridad</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">🗺️</div>
+        <span class="badge">Geoprocesamiento</span>
+        <h3>Plataforma de geolocalización catastral</h3>
+        <p>Aplicación cliente-servidor que georreferencia propiedades, consulta catastros y descarga ortofotos oficiales usando la API de QGIS, con transformación de coordenadas y logs operacionales.</p>
+        <div class="tags"><span class="tag">QGIS</span><span class="tag">Python</span><span class="tag">OGR</span><span class="tag">GIS</span></div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon">🖥️</div>
+        <span class="badge">Full-stack · Desktop</span>
+        <h3>Centro de comando de aplicaciones</h3>
+        <p>Aplicación de escritorio nativa que supervisa y gestiona un ecosistema de apps: paleta de comandos global, servidor MCP sobre HTTP y watcher inteligente integrado con agentes de IA.</p>
+        <div class="tags"><span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">Tauri</span><span class="tag">Fastify</span><span class="tag">MCP</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="habilidades">
+  <div class="wrap">
+    <h2 class="sec-title reveal">Habilidades técnicas</h2>
+    <p class="sec-sub reveal">Stack completo para llevar una idea de datos hasta producción.</p>
+    <div class="skills-grid">
+      <div class="skill-box reveal">
+        <h3>Machine Learning & IA</h3>
+        <div class="chips"><span class="chip">YOLOv8</span><span class="chip">XGBoost</span><span class="chip">CatBoost</span><span class="chip">Chronos-Bolt</span><span class="chip">LSTM</span><span class="chip">scikit-learn</span><span class="chip">Prophet</span><span class="chip">RAG / ChromaDB</span><span class="chip">LLMs (Claude, Gemini, Ollama)</span><span class="chip">Embeddings</span></div>
+      </div>
+      <div class="skill-box reveal">
+        <h3>Lenguajes & Backend</h3>
+        <div class="chips"><span class="chip">Python</span><span class="chip">TypeScript / JavaScript</span><span class="chip">FastAPI</span><span class="chip">Flask</span><span class="chip">Node.js / Express</span><span class="chip">SQL / SQLite</span><span class="chip">SQLAlchemy</span></div>
+      </div>
+      <div class="skill-box reveal">
+        <h3>Datos & BI</h3>
+        <div class="chips"><span class="chip">pandas</span><span class="chip">Power BI</span><span class="chip">Excel avanzado</span><span class="chip">ETL / Pipelines</span><span class="chip">openpyxl</span><span class="chip">Visualización</span></div>
+      </div>
+      <div class="skill-box reveal">
+        <h3>Automatización & Web</h3>
+        <div class="chips"><span class="chip">Playwright</span><span class="chip">Selenium</span><span class="chip">Web Scraping</span><span class="chip">React + Vite</span><span class="chip">Streamlit</span><span class="chip">Tauri</span><span class="chip">QGIS</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacto">
+  <div class="wrap">
+    <div class="contact-box reveal">
+      <h2>¿Trabajamos juntos?</h2>
+      <p>Estoy abierto a oportunidades en ciencia de datos, IA aplicada y automatización. Si buscas a alguien que entregue soluciones completas y funcionando, hablemos.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:javierdelatorre.palomino@gmail.com">✉️ Escríbeme</a>
+        <a class="btn btn-ghost" href="https://github.com/Javierdelatorre" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/javierdelatorrepalomino/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 Javier de la Torre · Hecho con dedicación y mucho código</div>
+</footer>
+
+<script>
+  // TODO: reemplaza "#" por tu URL de LinkedIn en el enlace con id="linkedin-link"
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
