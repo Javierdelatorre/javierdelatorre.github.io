@@ -24,8 +24,10 @@ concreto no dice nada sobre la calidad del pronóstico, la muestra larga sí.
 ## Principios que no se negocian
 
 - **Probabilidades, nunca certezas.** No existen "fijas" ni "apuestas seguras"; si el usuario
-  las pide, explica por qué no existen y ofrécele lo que sí hay: estimaciones calibradas y
-  valor esperado. No infles la confianza para sonar más útil.
+  las pide, muéstrale con números por qué no existen (un favorito al 80 % falla una de cada
+  cinco veces y su cuota ya lo descuenta) y ofrécele lo que sí hay: estimaciones calibradas y
+  valor esperado. Sin sermón: el aviso de riesgo va una sola vez, en una frase, al final; el
+  resto del mensaje es trabajo útil. No infles la confianza para sonar más útil.
 - **El mercado es el punto de partida.** Las cuotas de cierre de las casas grandes están entre
   los mejores pronosticadores que existen. Cuando haya cuotas, úsalas para calibrar
   (`--desde-cuotas`) o mezclarlas (`--peso-mercado`) y busca el valor en lo que el mercado
@@ -47,7 +49,10 @@ concreto no dice nada sobre la calidad del pronóstico, la muestra larga sí.
 ### 1. Encuadrar el partido
 
 Antes de buscar nada, fija: competición y fase, fecha y hora, sede real (neutral en finales),
-y **cómo se liquida cada mercado**. En Champions/Europa/Conference League:
+y **cómo se liquida cada mercado**. Si el usuario habla de "esta semana", "la próxima jornada"
+o no da fecha, comprueba primero en el calendario oficial que el partido o la jornada existen:
+en los parones de selecciones y entre fases no hay partidos, y analizar una jornada inexistente
+es el error más tonto posible. En Champions/Europa/Conference League:
 
 | Fase | 1X2, O/U, hándicaps, etc. | Mercados de clasificación |
 |---|---|---|
@@ -77,7 +82,11 @@ red limitada; en la sesión donde se creó esta skill solo funcionaban `WebSearc
 `raw.githubusercontent.com`), trabaja con: `WebSearch` para cuotas, bajas y noticias
 (los fragmentos de resultados suelen incluir cuotas 1X2 y O/U), los ficheros de
 openfootball para calendario y resultados, los datos que aporte el usuario, y tu propio
-conocimiento de la fuerza relativa (dilo explícitamente y con una fecha de referencia). Nunca
+conocimiento de la fuerza relativa (dilo explícitamente y con una fecha de referencia). Los
+resultados de `WebSearch` pueden llegar como un resumen redactado, no como fragmentos
+literales: trátalo como fuente secundaria, anota las URL que cita y comprueba que las cuotas
+tienen sentido (si las probabilidades implícitas del 1X2 suman ~100 % es un comparador o una
+cuota "justa", no el precio de una casa; si suman menos de 100 %, hay un error). Nunca
 inventes una cuota ni una alineación: si no la tienes, deja el hueco y pide el dato.
 
 ### 3. Estimar λ (lee `references/modelo.md` si dudas sobre parámetros)
@@ -89,7 +98,7 @@ Elige la vía según lo que tengas, de mejor a peor:
 | Tienes cuotas 1X2 (+ O/U) de una casa fiable | `--desde-cuotas O1 OX O2 --cuotas-ou OV UN --linea-ou 2.5` | Invierte el mercado y obtiene λ ya calibradas. Después aplica solo ajustes por información que el mercado aún no descuente (noticias de última hora) |
 | Tienes Elo de ambos | `--elo-local E1 --elo-visitante E2 --total T` | Ventaja local por defecto 65 puntos (~+0.3 goles). `--total` = goles medios de la competición ajustados al perfil del cruce (ver modelo.md) |
 | Tienes xG a favor/en contra y la media de la liga | `--fuerzas ATA_L DEF_L ATA_V DEF_V --media-local ML --media-visitante MV` | Fuerzas relativas: ataque = xG a favor por partido / media; defensa = xG en contra / media. Usa medias local/visitante de la competición |
-| Tienes λ de un modelo propio o de otra fuente | `--xg-local --xg-visitante` | Di de dónde salen |
+| Tienes λ de un modelo propio o de otra fuente | `--xg-local --xg-visitante` | Di de dónde salen. Si las da el usuario, úsalas tal cual como caso base y presenta cualquier ajuste contextual como escenario aparte, no como el pronóstico principal |
 
 Ajustes contextuales orientativos (multiplican λ; anótalos siempre en el informe):
 
@@ -99,7 +108,7 @@ Ajustes contextuales orientativos (multiplican λ; anótalos siempre en el infor
 | Baja del portero o del central titular | defensa rival ×1.05-1.10 (es decir, λ del rival sube) |
 | Rotación amplia (≥5 cambios) por prioridad de otra competición | ataque ×0.85-0.92, λ rival ×1.05 |
 | Vuelta con eliminatoria sentenciada (3+ goles) | ambos ×0.85-0.95 y menos supremacía |
-| Necesidad de marcar (vuelta, última jornada) | total ×1.05-1.10; supremacía hacia quien necesita |
+| Necesidad de marcar (vuelta, última jornada) | quien necesita ×1.05-1.10, el rival ×1.05 (se abre el partido) |
 | Viaje largo + menos de 72 h de descanso | ×0.95 |
 | Final en sede neutral | ventaja local 0 (Elo: `--ventaja-local 0`) |
 
@@ -119,14 +128,22 @@ python3 .claude/skills/pronostico-futbol/scripts/mercados.py \
 ```
 
 - La salida Markdown (`--formato md`, por defecto) ya está lista para pegar en el informe;
-  `--formato json` sirve para procesar. `--solo 1x2,ah,ou,btts` limita los grupos y
-  `--todas-lineas` muestra también las líneas extremas.
+  `--formato json` sirve para procesar. `--todas-lineas` muestra también las líneas extremas
+  (por defecto se ocultan las que están fuera del 10-90 %). `--solo` limita los grupos; los
+  identificadores son: `combinada`, `1x2`, `dc` (doble oportunidad), `dnb`, `ah`, `eh`, `ou`,
+  `tt` (goles por equipo), `btts`, `res_btts`, `res_ou`, `cs` (marcador exacto), `htft`, `1h`,
+  `2h`, `mitades`, `cero` (gana a cero), `parimpar`, `margen`, `goles`, `primero`, `elim`,
+  `corners`, `tarjetas`, `goleadores`.
 - Las claves de las cuotas son las que imprime la columna **Clave** (`1x2.1`, `ou.2.5.over`,
   `ah.local.-0.75`, `tt.visitante.1.5.over`, `htft.1/1`, `cs.2-1`...). Pasa siempre todas las
   cuotas de un mismo mercado (los tres del 1X2, over y under...) para que el script pueda
   quitar el margen de la casa y calcular la probabilidad justa del mercado.
-- `--eliminatoria vuelta --ida 1-2` añade clasificación, prórroga y penaltis; la ida se escribe
-  como goles del local de hoy - goles del visitante de hoy en aquel partido.
+- `--eliminatoria vuelta --ida 1-2` añade clasificación, prórroga, penaltis y el método de
+  clasificación por equipo. La ida se escribe como goles del local de hoy - goles del
+  visitante de hoy en aquel partido, no como la prensa dio el marcador: si el usuario dice
+  "perdimos 2-1 fuera" y hoy juega en casa, es `--ida 1-2`. Comprueba siempre la fila
+  "Lectura de la eliminatoria" que imprime el script; si no coincide con lo que cuenta el
+  usuario, has invertido la ida.
 - Córners y tarjetas no se derivan de los goles: pásales medias por equipo o total
   (`--corners-local 5.8 --corners-visitante 4.4 --tarjetas-total 4.6`) estimadas a partir de
   los datos de ambos equipos y del árbitro. Goleadores: `--goleadores-local "Nombre:cuota_goles:minutos"`
@@ -134,11 +151,22 @@ python3 .claude/skills/pronostico-futbol/scripts/mercados.py \
   que se espera que juegue (prefijo `+` si sale desde el banquillo).
 - Ejecuta el script siempre; no estimes probabilidades de cabeza ni las redondees "a ojo".
   Si vas a analizar una jornada entera, lanza un comando por partido y resume.
+- Para explicar un concepto (qué significa una cuota 1.30, por qué una combinada de favoritos
+  no es segura) puedes ejecutar el script con λ hipotéticas, siempre etiquetadas como
+  ilustrativas: nunca las presentes como pronóstico de un partido real ni les pongas cuotas de
+  casa inventadas.
+- Combinadas entre partidos distintos: `--combinada 0.78,0.65,0.55 --cuota-combinada 4.2`
+  multiplica las probabilidades de selecciones independientes y calcula cuota justa, EV y
+  stake (funciona solo, sin λ).
 
 ### 5. Decidir el valor y el stake
 
 - Una selección se recomienda si **EV ≥ 3 %** (`--ev-min`) y probabilidad del modelo ≥ 5 %.
   Con cuotas altas (> 4.0) exige más EV (≥ 6 %): el error del modelo pesa más ahí.
+- **Comprueba la fragilidad del EV**: si queda a menos de 3 puntos del umbral, repite el
+  cálculo con λ ±5 % (`--factor-local 0.95` y `1.05`). Si el valor desaparece, dilo y baja el
+  stake o descarta la selección; un EV que solo sobrevive con λ exactas no es valor.
+- Si el usuario no da banca, usa la de por defecto y expresa el stake en porcentaje de banca.
 - Stake = Kelly × fracción (0.25) con tope del 3 % de la banca. Dos selecciones del mismo
   partido están correlacionadas: si recomiendas varias, reduce cada stake o quédate con la de
   mayor EV.
@@ -146,9 +174,10 @@ python3 .claude/skills/pronostico-futbol/scripts/mercados.py \
   "Cuota mín.") para que compare él con su casa. Cuando las aporta, compáralas también con la
   probabilidad justa del mercado (columna "Prob. mercado"): si el modelo se separa más de 10
   puntos del mercado en el 1X2, sospecha del modelo antes que de la casa y revisa λ.
-- Combinadas: multiplica probabilidades solo si los eventos son de partidos distintos; dentro
-  del mismo partido usa la matriz (por ejemplo "1 y más de 2.5" ya está en `res_ou`). El margen
-  de la casa se multiplica en cada tramo, así que casi nunca hay valor en combinadas largas.
+- Combinadas: multiplica probabilidades solo si los eventos son de partidos distintos
+  (`--combinada`); dentro del mismo partido usa la matriz (por ejemplo "1 y más de 2.5" ya está
+  en `res_ou`). El margen de la casa se multiplica en cada tramo, así que casi nunca hay valor
+  en combinadas largas.
 
 ### 6. Escribir el informe
 
@@ -184,7 +213,9 @@ pueda perder, registrar y evaluar por cuota de cierre.
 
 Para una **jornada completa**, haz una tabla resumen (partido, 1X2 modelo, cuota, EV de la
 mejor selección) y desarrolla solo los dos o tres partidos con más valor o los que el usuario
-pida; el resto, en la tabla.
+pida; el resto, en la tabla. Si no hay partido que analizar o la pregunta es conceptual (qué es
+el hándicap asiático, por qué no hay fijas), responde directo, sin forzar la plantilla: basta
+con "Datos usados" si hubo búsqueda y el aviso final.
 
 ### 7. Registrar y aprender
 

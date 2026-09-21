@@ -101,6 +101,12 @@ página. Combina dos o tres consultas por partido:
 - `<equipo> Elo clubelo`
 
 Anota la fecha del resultado y desconfía de fragmentos sin fecha o de cuotas de otra temporada.
+En algunos entornos `WebSearch` devuelve un resumen redactado en vez de fragmentos literales:
+es una fuente secundaria, así que apunta las URL que cita y verifica lo que puedas. Prueba de
+cordura para unas cuotas 1X2: suma `1/cuota` de las tres; una casa real da entre 1.02 y 1.10
+(2-10 % de margen); ~1.00 indica un comparador con la mejor cuota de cada selección o una cuota
+"justa"; menos de 1.00 es un error o una oportunidad de arbitraje que no existirá al ir a
+apostar.
 
 ## 9. Buenas prácticas
 

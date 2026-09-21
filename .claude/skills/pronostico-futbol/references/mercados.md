@@ -150,8 +150,12 @@ intensidad constante, la probabilidad de marcar primero (y también la de marcar
 Se activan con `--eliminatoria unico` (partido único: final o play-off de un partido) o
 `--eliminatoria vuelta --ida L-V`, donde `L-V` son los goles que marcaron en la ida el equipo que
 hoy es local y el que hoy es visitante, en ese orden. Claves: `elim.local`, `elim.visitante`
-(se clasifica / gana el título), `elim.prorroga.si/no`, `elim.penaltis.si/no` y el desglose a 90
-minutos `elim.local.90`, `elim.visitante.90`, `elim.empate.90`.
+(se clasifica / gana el título), `elim.prorroga.si/no`, `elim.penaltis.si/no`, el desglose a 90
+minutos `elim.local.90`, `elim.visitante.90`, `elim.empate.90` y el **método de clasificación**
+que ofrecen algunas casas: `elim.metodo.local.90`, `elim.metodo.local.et` (pasa en la prórroga),
+`elim.metodo.local.pen` (pasa en los penaltis) y sus equivalentes para el visitante; las seis
+suman 1. El script imprime además una fila "Lectura de la eliminatoria" que explica en palabras
+qué necesita el local: úsala para detectar una ida introducida al revés.
 
 Reglas UEFA vigentes: no hay gol de visitante (desde 2021-22); con empate global se juegan 30
 minutos de prórroga y, si persiste, penaltis. El script modela la prórroga como un tercio de
@@ -221,9 +225,11 @@ los jugadores listados no debería superar 1.
   o suma las celdas que cumplan todas las condiciones. Multiplicar probabilidades marginales del
   mismo partido está mal salvo que sean independientes por construcción (goles y córners, por
   ejemplo, solo lo son de forma aproximada).
-- Entre partidos distintos, multiplica probabilidades. La cuota justa de la combinada es el
-  producto de las cuotas justas; el margen de la casa también se multiplica, por lo que una
-  combinada de cinco tramos al 5 % de margen cada uno paga como si tuviera un 23 % de margen.
+- Entre partidos distintos, multiplica probabilidades: `mercados.py --combinada 0.78,0.65,0.55
+  --cuota-combinada 4.2` da la probabilidad conjunta, la cuota justa, el EV y el stake. La cuota
+  justa de la combinada es el producto de las cuotas justas; el margen de la casa también se
+  multiplica, por lo que una combinada de cinco tramos al 5 % de margen cada uno paga como si
+  tuviera un 23 % de margen.
 - Regla práctica: recomienda combinadas solo si cada tramo tiene valor por sí solo.
 
 ## 24. Apuestas en directo

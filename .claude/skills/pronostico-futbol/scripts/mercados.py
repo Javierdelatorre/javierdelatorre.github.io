@@ -328,7 +328,7 @@ def construir_filas(M, lh, la, rho, args, n):
     lineas_ou = [i / 4 for i in range(2, 27)]
     for ln in lineas_ou:
         W, L, push = over(T, ln)
-        visible = args.todas_lineas or (0.06 <= W / max(EPS, W + L) <= 0.94)
+        visible = args.todas_lineas or (0.10 <= W / max(EPS, W + L) <= 0.90)
         if not visible:
             continue
         s = fmt_linea(ln)
@@ -341,7 +341,7 @@ def construir_filas(M, lh, la, rho, args, n):
     for nombre, tag, Td in ((loc, "local", Th), (vis, "visitante", Ta)):
         for ln in (0.5, 1.0, 1.5, 2.0, 2.5, 3.5):
             W, L, push = over(Td, ln)
-            if not args.todas_lineas and not (0.06 <= W / max(EPS, W + L) <= 0.94):
+            if not args.todas_lineas and not (0.10 <= W / max(EPS, W + L) <= 0.90):
                 continue
             s = fmt_linea(ln)
             filas.append(Fila("tt", f"tt.{tag}.{s}.over", f"{nombre} más de {s}", W, L, push, excl=f"tt.{tag}.{s}"))
@@ -502,6 +502,10 @@ def filas_eliminatoria(M, lh, la, args, n):
     pen_l = args.pen_local
     q_l = q90_l + p_et * (e_l + e_x * pen_l)
     q_v = q90_v + p_et * (e_v + e_x * (1 - pen_l))
+    et_l = p_et * e_l
+    et_v = p_et * e_v
+    pen_win_l = p_et * e_x * pen_l
+    pen_win_v = p_et * e_x * (1 - pen_l)
     filas = [Fila("elim", "elim.local", f"{loc} se clasifica / gana el título", q_l, excl="elim"),
              Fila("elim", "elim.visitante", f"{vis} se clasifica / gana el título", q_v, excl="elim"),
              Fila("elim", "elim.prorroga.si", "Habrá prórroga", p_et, excl="elim.prorroga"),
@@ -510,8 +514,21 @@ def filas_eliminatoria(M, lh, la, args, n):
              Fila("elim", "elim.penaltis.no", "No se decide en penaltis", 1 - p_et * e_x, excl="elim.penaltis"),
              Fila("elim", "elim.local.90", f"{loc} se clasifica en 90 minutos", q90_l, excl="elim.90"),
              Fila("elim", "elim.visitante.90", f"{vis} se clasifica en 90 minutos", q90_v, excl="elim.90"),
-             Fila("elim", "elim.empate.90", "Eliminatoria empatada tras 90 minutos", p_et, excl="elim.90")]
-    ctx = {"ida_local": a, "ida_visitante": b, "prob_prorroga": p_et, "prob_penaltis": p_et * e_x}
+             Fila("elim", "elim.empate.90", "Eliminatoria empatada tras 90 minutos", p_et, excl="elim.90"),
+             Fila("elim", "elim.metodo.local.90", f"{loc} pasa en los 90 minutos", q90_l, excl="elim.metodo"),
+             Fila("elim", "elim.metodo.local.et", f"{loc} pasa en la prórroga", et_l, excl="elim.metodo"),
+             Fila("elim", "elim.metodo.local.pen", f"{loc} pasa en los penaltis", pen_win_l, excl="elim.metodo"),
+             Fila("elim", "elim.metodo.visitante.90", f"{vis} pasa en los 90 minutos", q90_v, excl="elim.metodo"),
+             Fila("elim", "elim.metodo.visitante.et", f"{vis} pasa en la prórroga", et_v, excl="elim.metodo"),
+             Fila("elim", "elim.metodo.visitante.pen", f"{vis} pasa en los penaltis", pen_win_v, excl="elim.metodo")]
+    if d0 > 0:
+        lectura = f"{loc} llega con {d0:+d} de ventaja global: le vale el empate hoy"
+    elif d0 < 0:
+        lectura = f"{loc} necesita ganar hoy por {abs(d0) + 1} o más para pasar en 90 minutos (por {abs(d0)} fuerza la prórroga)"
+    else:
+        lectura = "Eliminatoria igualada: quien gane hoy pasa; el empate lleva a la prórroga"
+    ctx = {"ida_local": a, "ida_visitante": b, "lectura_eliminatoria": lectura,
+           "prob_prorroga": p_et, "prob_penaltis": p_et * e_x}
     return filas, ctx
 
 
@@ -673,7 +690,7 @@ def aplicar_cuotas(filas, cuotas, args):
 # Salida
 # ----------------------------------------------------------------------------
 TITULOS = [
-    ("1x2", "Resultado final (1X2)"), ("dc", "Doble oportunidad"), ("dnb", "Empate no válido (DNB)"),
+    ("combinada", "Combinada entre partidos"), ("1x2", "Resultado final (1X2)"), ("dc", "Doble oportunidad"), ("dnb", "Empate no válido (DNB)"),
     ("ah", "Hándicap asiático"), ("eh", "Hándicap europeo (3 vías)"), ("ou", "Total de goles (over/under)"),
     ("tt", "Goles por equipo"), ("btts", "Ambos marcan"), ("res_btts", "Resultado + ambos marcan"),
     ("res_ou", "Resultado + total"), ("cs", "Marcador exacto"), ("htft", "Descanso / final"),
@@ -716,6 +733,7 @@ def salida_md(filas, ctx, args, con_cuotas):
         out.append(f"| Expectativa Elo del local (1 = victoria, 0.5 = empate) | {ctx['elo_E']:.3f} |")
     if ctx.get("ida_local") is not None:
         out.append(f"| Ida (goles local de hoy - visitante de hoy) | {ctx['ida_local']}-{ctx['ida_visitante']} |")
+        out.append(f"| Lectura de la eliminatoria | {ctx['lectura_eliminatoria']} |")
     if con_cuotas:
         out.append(f"| Banca / Kelly fraccional / stake máx. | {args.banca:.0f} / {args.kelly:.2f} / {100 * args.stake_max:.1f}% |")
         out.append(f"| EV mínimo / peso del mercado / método margen | {100 * args.ev_min:.1f}% / {args.peso_mercado:.2f} / {args.metodo_margen} |")
@@ -729,7 +747,14 @@ def salida_md(filas, ctx, args, con_cuotas):
     out.append(f"- Más de 2.5 goles: **{pct(res['over25'])}** · Ambos marcan: **{pct(res['btts'])}**")
     out.append("")
 
-    solo = set(args.solo.split(",")) if args.solo else None
+    solo = None
+    if args.solo:
+        solo = {g.strip() for g in args.solo.split(",") if g.strip()}
+        validos = {gid for gid, _ in TITULOS}
+        desconocidos = sorted(solo - validos)
+        if desconocidos:
+            print(f"Aviso: grupos desconocidos en --solo: {', '.join(desconocidos)}. "
+                  f"Válidos: {', '.join(gid for gid, _ in TITULOS)}", file=sys.stderr)
     por_grupo = {}
     for f in filas:
         por_grupo.setdefault(f.grupo, []).append(f)
@@ -750,7 +775,7 @@ def salida_md(filas, ctx, args, con_cuotas):
                 if f.cuota_casa:
                     qm = pct(f.q_mercado) if f.q_mercado is not None else f"{pct(f.q_bruta)}*"
                     ev = f"**{100 * f.ev:+.1f}%**" if f.ev >= args.ev_min else f"{100 * f.ev:+.1f}%"
-                    stake = f"{f.stake:.2f}" if f.stake else "—"
+                    stake = f"{f.stake:.2f} ({100 * f.stake / args.banca:.2f}%)" if f.stake else "—"
                     base += f" {f.cuota_casa:.2f} | {qm} | {ev} | {stake} |"
                 else:
                     base += " — | — | — | — |"
@@ -765,7 +790,7 @@ def salida_md(filas, ctx, args, con_cuotas):
             out.append("| Selección | Cuota casa | Prob. modelo | EV | Kelly pleno | Stake sugerido |")
             out.append("|---|---:|---:|---:|---:|---:|")
             for f in valor:
-                out.append(f"| {f.seleccion} (`{f.clave}`) | {f.cuota_casa:.2f} | {pct(f.W_final)} | {100 * f.ev:+.1f}% | {100 * f.kelly:.1f}% | {f.stake:.2f} |")
+                out.append(f"| {f.seleccion} (`{f.clave}`) | {f.cuota_casa:.2f} | {pct(f.W_final)} | {100 * f.ev:+.1f}% | {100 * f.kelly:.1f}% | {f.stake:.2f} ({100 * f.stake / args.banca:.2f}% de la banca) |")
         out.append("")
         out.append("\\* probabilidad implícita bruta (no se pudo quitar el margen porque faltan cuotas del resto del mercado).")
         if ctx.get("desconocidas"):
@@ -835,6 +860,8 @@ def build_parser():
     s.add_argument("--goleadores-visitante", help="Igual que --goleadores-local")
     c = p.add_argument_group("Cuotas de la casa y gestión de banca")
     c.add_argument("--cuotas", help="JSON en línea, fichero JSON o lista clave=cuota separada por comas")
+    c.add_argument("--combinada", help="Probabilidades (0-1) de selecciones independientes de partidos distintos, separadas por comas")
+    c.add_argument("--cuota-combinada", type=float, help="Cuota que paga la casa por esa combinada")
     c.add_argument("--peso-mercado", type=float, default=0.0, help="Peso (0-1) de la probabilidad justa del mercado en la mezcla final")
     c.add_argument("--metodo-margen", choices=["potencia", "multiplicativo"], default="potencia")
     c.add_argument("--banca", type=float, default=1000.0)
@@ -846,17 +873,44 @@ def build_parser():
     o.add_argument("--local", default="Local")
     o.add_argument("--visitante", default="Visitante")
     o.add_argument("--formato", choices=["md", "json"], default="md")
-    o.add_argument("--solo", help="Grupos a mostrar separados por comas, p. ej. 1x2,ah,ou,btts")
+    o.add_argument("--solo", help="Grupos a mostrar separados por comas. Válidos: combinada, 1x2, dc, dnb, ah, eh, ou, tt, btts, res_btts, res_ou, cs, htft, 1h, 2h, mitades, cero, parimpar, margen, goles, primero, elim, corners, tarjetas, goleadores")
     o.add_argument("--todas-lineas", action="store_true", help="Muestra todas las líneas, incluso las extremas")
     o.add_argument("--top-marcadores", type=int, default=12)
     o.add_argument("--version", action="version", version=VERSION)
     return p
 
 
+def fila_combinada(args):
+    try:
+        probs = [float(v) for v in args.combinada.split(",") if v.strip()]
+    except ValueError:
+        sys.exit("--combinada espera probabilidades entre 0 y 1 separadas por comas, p. ej. 0.78,0.65")
+    if not probs or any(not (0 < q < 1) for q in probs):
+        sys.exit("--combinada espera probabilidades estrictamente entre 0 y 1")
+    conjunta = 1.0
+    for q in probs:
+        conjunta *= q
+    return Fila("combinada", "combinada", f"Combinada de {len(probs)} selecciones ({', '.join(f'{100 * q:.0f}%' for q in probs)})", conjunta)
+
+
 def main(argv=None):
     args = build_parser().parse_args(argv)
     n = max(6, args.max_goles)
     ctx = {"rho": args.rho, "elo_E": None, "mercado": None}
+    hay_lambdas = (args.xg_local is not None and args.xg_visitante is not None) or args.desde_cuotas \
+        or (args.elo_local is not None and args.elo_visitante is not None) or args.fuerzas
+
+    if args.combinada and not hay_lambdas:
+        filas = [fila_combinada(args)]
+        cuotas = {"combinada": args.cuota_combinada} if args.cuota_combinada else {}
+        if cuotas:
+            aplicar_cuotas(filas, cuotas, args)
+        f = filas[0]
+        print(f"# Combinada entre partidos\n\n{f.seleccion}\n")
+        print(f"- Probabilidad conjunta: {pct(f.W)}\n- Cuota justa: {cuota(f.cuota_justa)}\n- Cuota mínima (EV ≥ {100 * args.ev_min:.0f}%): {cuota(f.cuota_min(args.ev_min))}")
+        if f.cuota_casa:
+            print(f"- Cuota de la casa: {f.cuota_casa:.2f} → EV {100 * f.ev:+.1f}%, Kelly pleno {100 * f.kelly:.1f}%, stake sugerido {f.stake:.2f} sobre una banca de {args.banca:.0f}")
+        return
 
     if args.xg_local is not None and args.xg_visitante is not None:
         lh, la = args.xg_local, args.xg_visitante
@@ -865,7 +919,7 @@ def main(argv=None):
         o1, ox, o2 = args.desde_cuotas
         ov, un = (args.cuotas_ou or (None, None))
         lh, la, merc = lambdas_desde_cuotas(o1, ox, o2, ov, un, args.linea_ou, args.total, args.rho, n, args.metodo_margen)
-        ctx["origen"] = f"invertidos desde cuotas 1X2 {o1}/{ox}/{o2}" + (f" y O/U {fmt_linea(args.linea_ou)} {ov}/{un}" if ov else f" con total fijo {args.total}")
+        ctx["origen"] = f"invertidos desde cuotas 1X2 {o1}/{ox}/{o2}" + (f" y O/U {fmt_linea(args.linea_ou)} {ov}/{un}" if ov else " (sin O/U: el total se ajusta a la probabilidad de empate del mercado)")
         ctx["mercado"] = merc
     elif args.elo_local is not None and args.elo_visitante is not None:
         lh, la, E = lambdas_desde_elo(args.elo_local, args.elo_visitante, args.ventaja_local, args.total, args.rho, n)
@@ -903,7 +957,11 @@ def main(argv=None):
     ctx["resumen"] = {"p1": p1, "px": px, "p2": p2, "cs": f"{best[1]}-{best[2]}", "cs_p": best[0],
                       "over25": sum(T[3:]), "btts": P(M, lambda x, y: x >= 1 and y >= 1)}
 
+    if args.combinada:
+        filas.append(fila_combinada(args))
     cuotas = cargar_cuotas(args.cuotas)
+    if args.combinada and args.cuota_combinada:
+        cuotas["combinada"] = args.cuota_combinada
     con_cuotas = bool(cuotas)
     if con_cuotas:
         ctx["desconocidas"] = aplicar_cuotas(filas, cuotas, args)
