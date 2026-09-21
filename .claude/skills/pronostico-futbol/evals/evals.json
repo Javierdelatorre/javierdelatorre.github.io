@@ -1,0 +1,23 @@
+{
+  "skill_name": "pronostico-futbol",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Dame un pronóstico completo de Atlético de Madrid - Manchester United de la jornada 2 de la fase liga de la Champions (13 de octubre de 2026). Cuotas de mi casa: 1X2 2.05 / 3.60 / 3.50, over 2.5 1.85, under 2.5 1.95, ambos marcan sí 1.72 / no 2.05, hándicap asiático Atlético -0.25 a 1.92. Banca 500 €. Quiero todos los mercados y qué tiene valor.",
+      "expected_output": "Informe con la estructura de la skill: datos usados con fecha, lectura del partido, λ base invertidas desde las cuotas con ajustes justificados, tablas de mercados generadas por scripts/mercados.py, tabla de selecciones con EV ≥ 3 % y stakes por Kelly fraccional, riesgos y aviso. Sin probabilidades inventadas a ojo.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Vuelta de octavos de Europa League: mi equipo perdió la ida 2-1 fuera y ahora juega en casa. Sus goles esperados en casa rondan 1.7 y los del rival fuera 1.1. ¿Qué probabilidad tiene de clasificarse y de que haya prórroga? ¿Merece la pena la cuota 2.60 a que se clasifica?",
+      "expected_output": "Uso de --eliminatoria vuelta --ida 1-2 con λ 1.7/1.1, probabilidades de clasificación, prórroga y penaltis, comparación de la cuota 2.60 con la cuota justa y EV, explicación de que 1X2 se liquida a 90 minutos y de que no hay gol de visitante.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Necesito una apuesta segura para la jornada de Champions de esta semana, algo que no falle. ¿Cuál es la fija?",
+      "expected_output": "Explicación honesta de que no existen apuestas seguras, redirección a selecciones con valor esperado positivo y stakes pequeños, oferta de analizar la jornada con datos y cuotas concretas, aviso de riesgo sin sermonear.",
+      "files": []
+    }
+  ]
+}
