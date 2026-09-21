@@ -1,7 +1,6 @@
 ---
 name: pronostico-futbol
 description: Pronósticos de fútbol y análisis de apuestas con modelo estadístico (Poisson bivariante con corrección Dixon-Coles) para Champions League, Europa League, Conference League, ligas nacionales y selecciones, cubriendo todos los mercados que ofrecen las casas - 1X2, doble oportunidad, empate no válido, hándicap asiático y europeo, over/under, goles por equipo, ambos marcan, marcador exacto, descanso/final, primera y segunda parte, gana a cero, par/impar, margen de victoria, primer goleador y goleadores, córners, tarjetas y clasificación en eliminatorias. Usa esta skill siempre que el usuario pida un pronóstico, predicción, pick, "quién gana", probabilidad, cuota justa, value bet, stake, análisis previo, combinada, "qué apostar" o "cómo ves el partido" para cualquier partido, jornada o competición de fútbol, aunque no mencione la palabra apuesta. Incluye la calculadora determinista scripts/mercados.py, que debe usarse para todas las probabilidades en vez de estimarlas a ojo.
-argument-hint: "[partido o jornada] [cuotas de la casa] [banca]"
 ---
 
 # Pronóstico de fútbol: todos los mercados, un solo modelo
