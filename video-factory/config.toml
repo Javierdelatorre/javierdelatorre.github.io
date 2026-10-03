@@ -1,0 +1,48 @@
+# Configuración de la fábrica de videos. Todo lo que no pongas aquí usa el valor por defecto.
+
+[video]
+format = "vertical"     # vertical (Shorts, 1080x1920) | horizontal (1920x1080)
+fps = 30
+pause = 0.25            # segundos de silencio entre escenas
+
+[topics]
+provider = "trends"     # trends (Google Trends) | file (topics.txt)
+geo = "MX"              # país de las tendencias: MX, PE, ES, AR, CO, US...
+
+[script]
+writer = "template"     # template (solo prueba) | ollama (local, gratis) | claude (API)
+language = "es"
+scenes = 6
+
+[script.ollama]
+host = "http://localhost:11434"
+model = "llama3.1"
+
+[script.claude]
+model = "claude-sonnet-5"
+api_key_env = "ANTHROPIC_API_KEY"   # la clave va en una variable de entorno, nunca en este archivo
+
+[voice]
+backend = "silent"      # silent (sin audio, prueba) | piper | command (tu voz clonada, local)
+
+[voice.piper]
+binary = "piper"
+model = ""              # ruta al archivo .onnx
+
+[voice.command]
+speaker_wav = "voices/mi_voz.wav"   # tu grabación; la carpeta voices/ está ignorada por git
+# Ejemplo con tu propio script de TTS local (XTTS, F5-TTS...). Debe escribir un .wav en {out}:
+# args = ["python", "mi_tts.py", "--text-file", "{text_file}", "--speaker", "{speaker_wav}", "--language", "{language}", "--out", "{out}"]
+args = []
+
+[style]
+name = "kinetic"        # kinetic | countdown | slideshow  (ver: vidfactory styles)
+assets_dir = "assets"   # imágenes para el estilo slideshow
+font = ""               # ruta a un .ttf propio (opcional)
+
+[render]
+encoder = "auto"        # auto (usa la GPU NVIDIA si funciona) | libx264 | h264_nvenc
+
+[paths]
+output = "output"
+cache = "cache"

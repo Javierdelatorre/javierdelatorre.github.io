@@ -192,3 +192,14 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+# video-factory: nunca subir voces, medios generados ni cachés
+video-factory/voices/*
+!video-factory/voices/.gitkeep
+video-factory/output/
+video-factory/cache/
+video-factory/assets/*
+!video-factory/assets/.gitkeep
+video-factory/*.egg-info/
+*.wav
+*.mp4
+*.onnx

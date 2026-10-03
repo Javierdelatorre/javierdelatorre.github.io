@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vidfactory"
+version = "0.1.0"
+description = "Tema viral -> guion -> voz -> animación -> video, todo local"
+requires-python = ">=3.11"
+dependencies = ["Pillow>=10.1", "imageio-ffmpeg>=0.5"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+vidfactory = "vidfactory.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["vidfactory*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
